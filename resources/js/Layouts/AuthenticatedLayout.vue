@@ -12,14 +12,14 @@ const showingNavigationDropdown = ref(false);
 
 <template>
     <div>
-        <div class="min-h-screen bg-gray-100 dark:bg-gray-900">
+        <div class="min-h-screen bg-gray-100 dark:bg-gray-900 relative">
             <nav
-                class="bg-white dark:bg-gray-800 border-b border-gray-100 dark:border-gray-700"
+                class="bg-white dark:bg-gray-800 border-b border-gray-100 dark:border-gray-700 h-[58px] fixed w-full z-[99] top-0"
             >
                 <!-- Primary Navigation Menu -->
-                <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                    <div class="flex justify-between h-16">
-                        <div class="flex">
+                <div class="px-3 h-full">
+                    <div class="flex justify-between items-center h-full">
+                        <div class="flex items-center">
                             <!-- Logo -->
                             <div class="shrink-0 flex items-center">
                                 <Link :href="route('home')">
@@ -36,6 +36,7 @@ const showingNavigationDropdown = ref(false);
                                 <NavLink
                                     :href="route('home')"
                                     :active="route().current('home')"
+                                    class="h-[58px]"
                                 >
                                     Home
                                 </NavLink>
@@ -137,7 +138,7 @@ const showingNavigationDropdown = ref(false);
                         block: showingNavigationDropdown,
                         hidden: !showingNavigationDropdown,
                     }"
-                    class="sm:hidden"
+                    class="sm:hidden bg-white dark:bg-gray-900"
                 >
                     <div class="pt-2 pb-3 space-y-1">
                         <ResponsiveNavLink
@@ -179,18 +180,8 @@ const showingNavigationDropdown = ref(false);
                 </div>
             </nav>
 
-            <!-- Page Heading -->
-            <header
-                class="bg-white dark:bg-gray-800 shadow"
-                v-if="$slots.header"
-            >
-                <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
-                    <slot name="header" />
-                </div>
-            </header>
-
             <!-- Page Content -->
-            <main>
+            <main class="mt-[58px]">
                 <slot />
             </main>
         </div>

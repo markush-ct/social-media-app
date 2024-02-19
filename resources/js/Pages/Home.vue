@@ -14,20 +14,20 @@ defineProps({});
 
     <AuthenticatedLayout>
         <div
-            class="max-w-7xl mx-auto min-h-screen bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-gray-100"
+            class="h-full bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-gray-100"
         >
-            <div class="grid lg:grid-cols-12 gap-3 min-h-screen p-3">
+            <div class="lg:grid lg:grid-cols-12 lg:gap-12">
                 <div
-                    class="lg:col-span-3 bg-white dark:bg-gray-800 py-6 px-3 shadow rounded-md"
+                    class="lg:col-span-3 h-[calc(100vh-58px)] top-[58px] py-6 px-3 shadow sticky hidden lg:block overflow-auto"
                 >
                     <GroupList />
                 </div>
-                <div class="lg:col-span-6 order-3 lg:order-2 space-y-3">
+                <div class="lg:col-span-6 space-y-3 py-3 lg:py-6">
                     <CreatePost />
                     <PostList />
                 </div>
                 <div
-                    class="lg:col-span-3 lg:order-3 bg-white dark:bg-gray-800 py-6 px-3 shadow rounded-md"
+                    class="lg:col-span-3 h-[calc(100vh-58px)] top-[58px] py-6 px-3 shadow sticky hidden lg:block overflow-auto"
                 >
                     <FollowingList />
                 </div>
