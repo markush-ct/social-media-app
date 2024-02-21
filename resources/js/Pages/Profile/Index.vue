@@ -1,6 +1,13 @@
 <script setup>
 import PrimaryButton from "@/Components/PrimaryButton.vue";
 import { TabGroup, TabList, Tab, TabPanels, TabPanel } from "@headlessui/vue";
+import TabItem from "./Partials/TabItem.vue";
+import { Head, usePage, Link } from "@inertiajs/vue3";
+import { computed } from "vue";
+
+const authUser = usePage().props.auth.user;
+const user = usePage().props.user;
+const isMyProfile = computed(() => (authUser && authUser.id) === user.id);
 
 defineProps({
     user: {
@@ -9,6 +16,8 @@ defineProps({
 });
 </script>
 <template>
+    <Head :title="user.name" />
+
     <div
         class="bg-gray-100 dark:bg-gray-900 min-h-screen text-gray-900 dark:text-gray-100"
     >
@@ -54,8 +63,31 @@ defineProps({
                                         {{ user.email }} - {{ user.username }}
                                     </a>
                                 </div>
-                                <div class="text-center lg:text-right w-full">
-                                    <PrimaryButton>Edit Profile</PrimaryButton>
+                                <div
+                                    v-if="isMyProfile"
+                                    class="text-center lg:text-right w-full"
+                                >
+                                    <Link :href="route('profile.edit')">
+                                        <PrimaryButton>
+                                            <svg
+                                                xmlns="http://www.w3.org/2000/svg"
+                                                fill="none"
+                                                viewBox="0 0 24 24"
+                                                strokeWidth="{1.5}"
+                                                stroke="currentColor"
+                                                className="w-6 h-6"
+                                                class="w-[18px] mr-2"
+                                            >
+                                                <path
+                                                    strokeLinecap="round"
+                                                    strokeLinejoin="round"
+                                                    d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L6.832 19.82a4.5 4.5 0 0 1-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 0 1 1.13-1.897L16.863 4.487Zm0 0L19.5 7.125"
+                                                />
+                                            </svg>
+
+                                            Edit Profile
+                                        </PrimaryButton>
+                                    </Link>
                                 </div>
                             </div>
                         </div>
@@ -68,31 +100,21 @@ defineProps({
             </div>
 
             <TabList class="bg-white dark:bg-gray-800 sticky top-0 shadow">
-                <div class="max-w-6xl mx-auto px-3 md:px-8 py-1">
-                    <Tab
-                        class="p-3 rounded-md hover:bg-gray-200 dark:hover:bg-gray-700"
-                    >
-                        About
+                <div class="max-w-6xl mx-auto px-3 md:px-8">
+                    <Tab as="template" v-slot="{ selected }" class="p-3">
+                        <TabItem text="About" :selected="selected" />
                     </Tab>
-                    <Tab
-                        class="p-3 rounded-md hover:bg-gray-200 dark:hover:bg-gray-700"
-                    >
-                        Posts
+                    <Tab as="template" v-slot="{ selected }" class="p-3">
+                        <TabItem text="Posts" :selected="selected" />
                     </Tab>
-                    <Tab
-                        class="p-3 rounded-md hover:bg-gray-200 dark:hover:bg-gray-700"
-                    >
-                        Followers
+                    <Tab as="template" v-slot="{ selected }" class="p-3">
+                        <TabItem text="Followers" :selected="selected" />
                     </Tab>
-                    <Tab
-                        class="p-3 rounded-md hover:bg-gray-200 dark:hover:bg-gray-700"
-                    >
-                        Followings
+                    <Tab as="template" v-slot="{ selected }" class="p-3">
+                        <TabItem text="Followings" :selected="selected" />
                     </Tab>
-                    <Tab
-                        class="p-3 rounded-md hover:bg-gray-200 dark:hover:bg-gray-700"
-                    >
-                        Photos
+                    <Tab as="template" v-slot="{ selected }" class="p-3">
+                        <TabItem text="Photos" :selected="selected" />
                     </Tab>
                 </div>
             </TabList>
