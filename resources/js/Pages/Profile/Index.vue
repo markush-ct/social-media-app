@@ -4,23 +4,69 @@ import { TabGroup, TabList, Tab, TabPanels, TabPanel } from "@headlessui/vue";
 import TabItem from "./Partials/TabItem.vue";
 import { Head, usePage, Link } from "@inertiajs/vue3";
 import { computed } from "vue";
+import { CameraIcon, GlobeAsiaAustraliaIcon } from "@heroicons/vue/16/solid";
+import { ref } from "vue";
 
 const authUser = usePage().props.auth.user;
 const user = usePage().props.user;
 const isMyProfile = computed(() => (authUser && authUser.id) === user.id);
+const coverImageSrc = ref(null);
 
 defineProps({
     user: {
         type: Object,
     },
 });
+
+const openCoverInput = () => {
+    document.getElementById("cover_photo").click();
+};
+
+const onCoverChange = (e) => {
+    const file = e.target.files[0];
+
+    if (file) {
+        const reader = new FileReader();
+        reader.onload = () => {
+            coverImageSrc.value = reader.result;
+        };
+        reader.readAsDataURL(file);
+    }
+};
+
+const onCoverCancel = () => {
+    coverImageSrc.value = null;
+};
 </script>
 <template>
     <Head :title="user.name" />
 
+    <!-- For uploading cover photo and should be hidden -->
+    <input
+        type="file"
+        name="cover_photo"
+        accept="image/png, image/jpeg"
+        id="cover_photo"
+        class="hidden"
+        @change="onCoverChange"
+    />
+
     <div
         class="bg-gray-100 dark:bg-gray-900 min-h-screen text-gray-900 dark:text-gray-100"
     >
+        <div
+            v-if="coverImageSrc"
+            class="fixed bg-gray-900 bg-opacity-75 w-full z-50 py-3 px-8 flex justify-between items-center"
+        >
+            <div class="inline-flex gap-2">
+                <GlobeAsiaAustraliaIcon class="w-[18px]" />
+                Your cover photo is public.
+            </div>
+            <div class="space-x-3">
+                <PrimaryButton @click="onCoverCancel"> Cancel </PrimaryButton>
+                <PrimaryButton>Save changes</PrimaryButton>
+            </div>
+        </div>
         <TabGroup>
             <div class="bg-white dark:bg-gray-800">
                 <div class="max-w-6xl mx-auto">
@@ -29,10 +75,23 @@ defineProps({
                             class="overflow-hidden h-full rounded-b-lg relative shadow-inner"
                         >
                             <img
-                                src="https://picsum.photos/1000"
+                                :src="
+                                    coverImageSrc ??
+                                    'https://picsum.photos/1000'
+                                "
                                 alt="Cover Photo"
                                 class="w-full h-full object-cover object-center"
                             />
+                            <PrimaryButton
+                                class="absolute bottom-3 right-3 lg:right-8 z-40 shadow"
+                                @click="openCoverInput"
+                                v-if="coverImageSrc === null"
+                            >
+                                <CameraIcon class="w-[18px] lg:mr-2" />
+                                <span class="hidden lg:block">
+                                    Add cover photo
+                                </span>
+                            </PrimaryButton>
                             <div
                                 class="shadow-[0_0_500px_150px_rgba(0,0,0,0.75)] absolute w-full h-full"
                             ></div>
