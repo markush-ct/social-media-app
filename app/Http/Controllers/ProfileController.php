@@ -2,21 +2,23 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\ProfileUpdateRequest;
 use App\Models\User;
-use Illuminate\Contracts\Auth\MustVerifyEmail;
-use Illuminate\Http\RedirectResponse;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Redirect;
 use Inertia\Inertia;
 use Inertia\Response;
+use Illuminate\Http\Request;
+use App\Http\Resources\UserResource;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Redirect;
+use App\Http\Requests\ProfileUpdateRequest;
+use Illuminate\Contracts\Auth\MustVerifyEmail;
 
 class ProfileController extends Controller
 {
     public function index(User $user): Response
     {
-        return Inertia::render('Profile/Index', compact('user'));
+        return Inertia::render('Profile/Index', ['user' => new UserResource($user)]);
     }
 
     /**
@@ -65,5 +67,25 @@ class ProfileController extends Controller
         $request->session()->regenerateToken();
 
         return Redirect::to('/');
+    }
+
+    // Update cover photo
+    public function updateCover(Request $request): RedirectResponse
+    {
+        $user = $request->user();
+
+        $request->validate(['cover' => 'image']);
+
+        // Delete old cover image
+        if (!is_null($user->cover_path)) {
+            Storage::disk('public')->delete($user->cover_path);
+        }
+
+        // Replace new cover image and save
+        $path = $request->file('cover')->store('cover/' . $user->id, 'public');
+
+        $user->update(['cover_path' => $path]);
+
+        return back();
     }
 }

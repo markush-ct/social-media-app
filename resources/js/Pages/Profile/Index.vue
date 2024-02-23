@@ -6,6 +6,7 @@ import { Head, usePage, Link } from "@inertiajs/vue3";
 import { computed } from "vue";
 import { CameraIcon, GlobeAsiaAustraliaIcon } from "@heroicons/vue/16/solid";
 import { ref } from "vue";
+import { useForm } from "@inertiajs/vue3";
 
 const authUser = usePage().props.auth.user;
 const user = usePage().props.user;
@@ -13,9 +14,13 @@ const isMyProfile = computed(() => (authUser && authUser.id) === user.id);
 const coverImageSrc = ref(null);
 
 defineProps({
-    user: {
-        type: Object,
-    },
+    user: Object,
+    errors: Object,
+});
+
+// Forms
+const coverForm = useForm({
+    cover: null,
 });
 
 const openCoverInput = () => {
@@ -23,19 +28,30 @@ const openCoverInput = () => {
 };
 
 const onCoverChange = (e) => {
-    const file = e.target.files[0];
+    coverForm.cover = e.target.files[0];
 
-    if (file) {
+    if (coverForm.cover) {
         const reader = new FileReader();
         reader.onload = () => {
             coverImageSrc.value = reader.result;
         };
-        reader.readAsDataURL(file);
+        reader.readAsDataURL(coverForm.cover);
     }
 };
 
 const onCoverCancel = () => {
     coverImageSrc.value = null;
+    isCoverChanging.value = false;
+};
+
+const submitCoverImage = () => {
+    coverForm.post(route("profile.updateCover"), {
+        preserveScroll: true,
+        onSuccess: () => {
+            coverForm.reset();
+            coverImageSrc.value = null;
+        },
+    });
 };
 </script>
 <template>
@@ -64,7 +80,9 @@ const onCoverCancel = () => {
             </div>
             <div class="space-x-3">
                 <PrimaryButton @click="onCoverCancel"> Cancel </PrimaryButton>
-                <PrimaryButton>Save changes</PrimaryButton>
+                <PrimaryButton @click="submitCoverImage">
+                    Save changes
+                </PrimaryButton>
             </div>
         </div>
         <TabGroup>
@@ -76,7 +94,8 @@ const onCoverCancel = () => {
                         >
                             <img
                                 :src="
-                                    coverImageSrc ??
+                                    coverImageSrc ||
+                                    user.cover_url ||
                                     'https://picsum.photos/1000'
                                 "
                                 alt="Cover Photo"
@@ -85,7 +104,7 @@ const onCoverCancel = () => {
                             <PrimaryButton
                                 class="absolute bottom-3 right-3 lg:right-8 z-40 shadow"
                                 @click="openCoverInput"
-                                v-if="coverImageSrc === null"
+                                v-if="!coverImageSrc && isMyProfile"
                             >
                                 <CameraIcon class="w-[18px] lg:mr-2" />
                                 <span class="hidden lg:block">
