@@ -5,14 +5,17 @@ import Dropdown from "@/Components/Dropdown.vue";
 import DropdownLink from "@/Components/DropdownLink.vue";
 import NavLink from "@/Components/NavLink.vue";
 import ResponsiveNavLink from "@/Components/ResponsiveNavLink.vue";
-import { Link } from "@inertiajs/vue3";
+import { Link, usePage } from "@inertiajs/vue3";
 
 const showingNavigationDropdown = ref(false);
+const authUser = usePage().props.auth.user;
 </script>
 
 <template>
     <div>
-        <div class="min-h-screen bg-gray-100 dark:bg-gray-900 relative">
+        <div
+            class="min-h-screen bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-gray-100 relative"
+        >
             <nav
                 class="bg-white dark:bg-gray-800 border-b border-gray-100 dark:border-gray-700 h-[58px] fixed w-full z-[99] top-0"
             >
@@ -22,15 +25,22 @@ const showingNavigationDropdown = ref(false);
                         <div class="flex items-center">
                             <!-- Logo -->
                             <div class="shrink-0 flex items-center">
-                                <Link :href="route('home')">
+                                <Link
+                                    :href="route('home')"
+                                    class="flex items-center gap-2"
+                                >
                                     <ApplicationLogo
                                         class="block h-9 w-auto fill-current text-gray-800 dark:text-gray-200"
                                     />
+                                    <span class="text-xl font-bold">
+                                        PinoyBook
+                                    </span>
                                 </Link>
                             </div>
 
                             <!-- Navigation Links -->
                             <div
+                                v-if="authUser"
                                 class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex"
                             >
                                 <NavLink
@@ -43,10 +53,13 @@ const showingNavigationDropdown = ref(false);
                             </div>
                         </div>
 
-                        <div class="hidden sm:flex sm:items-center sm:ms-6">
+                        <div
+                            v-if="authUser"
+                            class="hidden sm:flex sm:items-center sm:ms-6"
+                        >
                             <!-- Settings Dropdown -->
                             <div class="ms-3 relative">
-                                <Dropdown align="right" width="48">
+                                <Dropdown align="right" width="auto">
                                     <template #trigger>
                                         <span class="inline-flex rounded-md">
                                             <button
@@ -73,6 +86,32 @@ const showingNavigationDropdown = ref(false);
 
                                     <template #content>
                                         <DropdownLink
+                                            :href="
+                                                route(
+                                                    'profile.index',
+                                                    $page.props.auth.user
+                                                )
+                                            "
+                                        >
+                                            <div
+                                                class="font-medium text-base text-gray-800 dark:text-gray-200"
+                                            >
+                                                {{ $page.props.auth.user.name }}
+                                            </div>
+                                            <div
+                                                class="font-medium text-sm text-gray-500"
+                                            >
+                                                {{
+                                                    $page.props.auth.user.email
+                                                }}
+                                            </div>
+                                        </DropdownLink>
+
+                                        <hr
+                                            class="h-px bg-gray-200 border-0 dark:bg-gray-600"
+                                        />
+
+                                        <DropdownLink
                                             :href="route('profile.edit')"
                                         >
                                             Profile
@@ -90,7 +129,10 @@ const showingNavigationDropdown = ref(false);
                         </div>
 
                         <!-- Hamburger -->
-                        <div class="-me-2 flex items-center sm:hidden">
+                        <div
+                            v-if="authUser"
+                            class="-me-2 flex items-center sm:hidden"
+                        >
                             <button
                                 @click="
                                     showingNavigationDropdown =
@@ -134,6 +176,7 @@ const showingNavigationDropdown = ref(false);
 
                 <!-- Responsive Navigation Menu -->
                 <div
+                    v-if="authUser"
                     :class="{
                         block: showingNavigationDropdown,
                         hidden: !showingNavigationDropdown,
@@ -151,20 +194,26 @@ const showingNavigationDropdown = ref(false);
 
                     <!-- Responsive Settings Options -->
                     <div
-                        class="pt-4 pb-1 border-t border-gray-200 dark:border-gray-600"
+                        class="pb-1 border-t border-gray-200 dark:border-gray-600"
                     >
-                        <div class="px-4">
-                            <div
-                                class="font-medium text-base text-gray-800 dark:text-gray-200"
-                            >
-                                {{ $page.props.auth.user.name }}
-                            </div>
-                            <div class="font-medium text-sm text-gray-500">
-                                {{ $page.props.auth.user.email }}
-                            </div>
-                        </div>
-
                         <div class="mt-3 space-y-1">
+                            <ResponsiveNavLink
+                                :href="
+                                    route(
+                                        'profile.index',
+                                        $page.props.auth.user
+                                    )
+                                "
+                            >
+                                <div
+                                    class="font-medium text-base text-gray-800 dark:text-gray-200"
+                                >
+                                    {{ $page.props.auth.user.name }}
+                                </div>
+                                <div class="font-medium text-sm text-gray-500">
+                                    {{ $page.props.auth.user.email }}
+                                </div>
+                            </ResponsiveNavLink>
                             <ResponsiveNavLink :href="route('profile.edit')">
                                 Profile
                             </ResponsiveNavLink>
