@@ -18,7 +18,10 @@ class ProfileController extends Controller
 {
     public function index(User $user): Response
     {
-        return Inertia::render('Profile/Index', ['user' => new UserResource($user)]);
+        return Inertia::render('Profile/Index', [
+            'user' => new UserResource($user),
+            'status' => session('status'),
+        ]);
     }
 
     /**
@@ -86,6 +89,6 @@ class ProfileController extends Controller
 
         $user->update(['cover_path' => $path]);
 
-        return back();
+        return back()->with('status', 'Cover photo updated successfully!');
     }
 }

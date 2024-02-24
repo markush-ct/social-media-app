@@ -9,12 +9,13 @@ import { ref } from "vue";
 import { useForm } from "@inertiajs/vue3";
 
 const authUser = usePage().props.auth.user;
-const user = usePage().props.user;
-const isMyProfile = computed(() => (authUser && authUser.id) === user.id);
+const otherUser = usePage().props.user;
+const isMyProfile = computed(() => (authUser && authUser.id) === otherUser.id);
 const coverImageSrc = ref(null);
 
 defineProps({
     user: Object,
+    status: String,
     errors: Object,
 });
 
@@ -41,7 +42,6 @@ const onCoverChange = (e) => {
 
 const onCoverCancel = () => {
     coverImageSrc.value = null;
-    isCoverChanging.value = false;
 };
 
 const submitCoverImage = () => {
