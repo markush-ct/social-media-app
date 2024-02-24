@@ -73,22 +73,41 @@ class ProfileController extends Controller
     }
 
     // Update cover photo
-    public function updateCover(Request $request): RedirectResponse
+    public function updateImages(Request $request): RedirectResponse
     {
         $user = $request->user();
 
-        $request->validate(['cover' => 'image']);
+        $request->validate(
+            [
+                'cover' => 'image|nullable',
+                'avatar' => 'image|nullable'
+            ]
+        );
 
-        // Delete old cover image
-        if (!is_null($user->cover_path)) {
-            Storage::disk('public')->delete($user->cover_path);
+        // Get image files
+        $cover = $request->file('cover') ?? null;
+        $avatar = $request->file('avatar') ?? null;
+
+        if ($cover) {
+            if (!is_null($user->cover_path)) {
+                Storage::disk('public')->delete($user->cover_path);
+            }
+
+            // Replace new image and save
+            $path = $request->file('cover')->store('cover/' . $user->id, 'public');
+            $user->update(['cover_path' => $path]);
         }
 
-        // Replace new cover image and save
-        $path = $request->file('cover')->store('cover/' . $user->id, 'public');
+        if ($avatar) {
+            if (!is_null($user->avatar_path)) {
+                Storage::disk('public')->delete($user->avatar_path);
+            }
 
-        $user->update(['cover_path' => $path]);
+            // Replace new image and save
+            $path = $request->file('avatar')->store('avatar/' . $user->id, 'public');
+            $user->update(['avatar_path' => $path]);
+        }
 
-        return back()->with('status', 'Cover photo updated successfully!');
+        return back()->with('status', 'Image updated successfully!');
     }
 }

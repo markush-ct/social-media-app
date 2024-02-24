@@ -4,7 +4,11 @@ import { TabGroup, TabList, Tab, TabPanels, TabPanel } from "@headlessui/vue";
 import TabItem from "./Partials/TabItem.vue";
 import { Head, usePage, Link } from "@inertiajs/vue3";
 import { computed } from "vue";
-import { CameraIcon, GlobeAsiaAustraliaIcon } from "@heroicons/vue/16/solid";
+import {
+    CameraIcon,
+    GlobeAsiaAustraliaIcon,
+    XMarkIcon,
+} from "@heroicons/vue/24/solid";
 import { ref } from "vue";
 import { useForm } from "@inertiajs/vue3";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
@@ -13,6 +17,9 @@ const authUser = usePage().props.auth.user;
 const otherUser = usePage().props.user;
 const isMyProfile = computed(() => (authUser && authUser.id) === otherUser.id);
 const coverImageSrc = ref(null);
+const avatarImageSrc = ref(null);
+const isChangingImage = ref(false);
+const showStatusToast = ref(false);
 
 defineProps({
     user: Object,
@@ -21,36 +28,68 @@ defineProps({
 });
 
 // Forms
-const coverForm = useForm({
+const imageForm = useForm({
     cover: null,
+    avatar: null,
 });
 
 const openCoverInput = () => {
-    document.getElementById("cover_photo").click();
+    document.getElementById("cover-photo").click();
+};
+
+const openAvatarInput = () => {
+    document.getElementById("avatar-photo").click();
 };
 
 const onCoverChange = (e) => {
-    coverForm.cover = e.target.files[0];
+    imageForm.cover = e.target.files[0];
+    isChangingImage.value = true;
 
-    if (coverForm.cover) {
+    if (imageForm.cover) {
         const reader = new FileReader();
         reader.onload = () => {
             coverImageSrc.value = reader.result;
         };
-        reader.readAsDataURL(coverForm.cover);
+        reader.readAsDataURL(imageForm.cover);
     }
 };
 
-const onCoverCancel = () => {
-    coverImageSrc.value = null;
+const onAvatarChange = (e) => {
+    imageForm.avatar = e.target.files[0];
+    isChangingImage.value = true;
+
+    if (imageForm.avatar) {
+        const reader = new FileReader();
+        reader.onload = () => {
+            avatarImageSrc.value = reader.result;
+        };
+        reader.readAsDataURL(imageForm.avatar);
+    }
 };
 
+const imageReset = () => {
+    coverImageSrc.value = null;
+    avatarImageSrc.value = null;
+    isChangingImage.value = false;
+
+    imageForm.reset();
+};
+
+const onImageCancel = () => {
+    imageReset();
+};
+
+const closeStatusToast = () => (showStatusToast.value = false);
+
 const submitCoverImage = () => {
-    coverForm.post(route("profile.updateCover"), {
+    imageForm.post(route("profile.updateImages"), {
         preserveScroll: true,
         onSuccess: () => {
-            coverForm.reset();
-            coverImageSrc.value = null;
+            imageReset();
+            showStatusToast.value = true;
+            setTimeout(() => {
+                showStatusToast.value = false;
+            }, 5000);
         },
     });
 };
@@ -58,20 +97,35 @@ const submitCoverImage = () => {
 <template>
     <Head :title="user.name" />
 
-    <!-- For uploading cover photo and should be hidden -->
+    <!-- For uploading images that should be hidden -->
     <input
         type="file"
-        name="cover_photo"
         accept="image/png, image/jpeg"
-        id="cover_photo"
+        id="cover-photo"
         class="hidden"
         @change="onCoverChange"
+    />
+    <input
+        type="file"
+        accept="image/png, image/jpeg"
+        id="avatar-photo"
+        class="hidden"
+        @change="onAvatarChange"
     />
 
     <AuthenticatedLayout>
         <div
-            class="bg-gray-100 dark:bg-gray-900 min-h-screen text-gray-900 dark:text-gray-100"
+            class="bg-gray-100 dark:bg-gray-900 min-h-screen text-gray-900 dark:text-gray-100 relative"
         >
+            <div
+                v-show="showStatusToast"
+                class="fixed z-50 top-20 lg:right-3 -right-1/2 transform -translate-x-1/2 lg:transform-none p-3 w-full lg:max-w-[30%] bg-green-800 rounded-md flex gap-2 items-start justify-between bg-opacity-80 outline outline-1 outline-green-600"
+            >
+                <span>{{ status }}</span>
+                <span class="shrink-0">
+                    <XMarkIcon class="w-[24px]" @click="closeStatusToast" />
+                </span>
+            </div>
             <div
                 v-if="coverImageSrc"
                 class="fixed bg-gray-900 bg-opacity-75 w-full z-50 py-3 px-8 flex justify-between items-center"
@@ -81,7 +135,7 @@ const submitCoverImage = () => {
                     Your cover photo is public.
                 </div>
                 <div class="space-x-3">
-                    <PrimaryButton @click="onCoverCancel">
+                    <PrimaryButton @click="onImageCancel">
                         Cancel
                     </PrimaryButton>
                     <PrimaryButton @click="submitCoverImage">
@@ -89,6 +143,25 @@ const submitCoverImage = () => {
                     </PrimaryButton>
                 </div>
             </div>
+
+            <div
+                v-if="avatarImageSrc"
+                class="fixed bg-gray-900 bg-opacity-75 w-full z-50 py-3 px-8 flex justify-between items-center"
+            >
+                <div class="inline-flex gap-2">
+                    <GlobeAsiaAustraliaIcon class="w-[18px]" />
+                    Your avatar photo is public.
+                </div>
+                <div class="space-x-3">
+                    <PrimaryButton @click="onImageCancel">
+                        Cancel
+                    </PrimaryButton>
+                    <PrimaryButton @click="submitCoverImage">
+                        Save changes
+                    </PrimaryButton>
+                </div>
+            </div>
+
             <TabGroup>
                 <div class="bg-white dark:bg-gray-800">
                     <div class="max-w-6xl mx-auto">
@@ -108,7 +181,7 @@ const submitCoverImage = () => {
                                 <PrimaryButton
                                     class="absolute bottom-3 right-3 lg:right-8 z-40 shadow"
                                     @click="openCoverInput"
-                                    v-if="!coverImageSrc && isMyProfile"
+                                    v-if="!isChangingImage && isMyProfile"
                                 >
                                     <CameraIcon class="w-[18px] lg:mr-2" />
                                     <span class="hidden lg:block">
@@ -128,11 +201,25 @@ const submitCoverImage = () => {
                                     class="relative w-full lg:w-[150px] h-[100px]"
                                 >
                                     <div
-                                        class="h-[150px] w-[150px] rounded-full bg-white absolute bottom-0 lg:left-0 left-1/2 transform -translate-x-1/2 lg:transform-none overflow-hidden border-white dark:border-gray-800 border-4"
+                                        class="h-[150px] w-[150px] absolute bottom-0 lg:left-0 left-1/2 transform -translate-x-1/2 lg:transform-none"
                                     >
+                                        <button
+                                            v-if="
+                                                !isChangingImage && isMyProfile
+                                            "
+                                            @click="openAvatarInput"
+                                            class="overflow-visible absolute bottom-0 right-2 inline-flex items-center p-2 bg-gray-800 dark:bg-gray-200 border border-transparent rounded-full text-white dark:text-gray-800 hover:bg-gray-700 dark:hover:bg-white focus:bg-gray-700 dark:focus:bg-white active:bg-gray-900 dark:active:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 transition ease-in-out duration-150 shadow z-40"
+                                        >
+                                            <CameraIcon class="w-[18px]" />
+                                        </button>
                                         <img
-                                            src="https://xsgames.co/randomusers/assets/avatars/male/74.jpg"
+                                            :src="
+                                                avatarImageSrc ||
+                                                user.avatar_url ||
+                                                'https://xsgames.co/randomusers/assets/avatars/male/74.jpg'
+                                            "
                                             alt="Avatar Profile"
+                                            class="rounded-full border-white dark:border-gray-800 border-4 object-cover object-center w-full h-full"
                                         />
                                     </div>
                                 </div>
@@ -186,7 +273,9 @@ const submitCoverImage = () => {
                     </div>
                 </div>
 
-                <TabList class="bg-white dark:bg-gray-800 sticky top-0 shadow">
+                <TabList
+                    class="bg-white dark:bg-gray-800 sticky top-[58px] shadow z-40 text-sm"
+                >
                     <div class="max-w-6xl mx-auto px-3 md:px-8">
                         <Tab as="template" v-slot="{ selected }" class="p-3">
                             <TabItem text="About" :selected="selected" />

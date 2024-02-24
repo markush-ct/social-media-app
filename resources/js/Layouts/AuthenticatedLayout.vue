@@ -17,7 +17,7 @@ const authUser = usePage().props.auth.user;
             class="min-h-screen bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-gray-100 relative"
         >
             <nav
-                class="bg-white dark:bg-gray-800 border-b border-gray-100 dark:border-gray-700 h-[58px] fixed w-full z-[99] top-0"
+                class="bg-white dark:bg-gray-800 border-b border-gray-100 dark:border-gray-700 h-[58px] fixed w-full z-50 top-0"
             >
                 <!-- Primary Navigation Menu -->
                 <div class="px-3 h-full">
