@@ -94,7 +94,7 @@ class ProfileController extends Controller
             }
 
             // Replace new image and save
-            $path = $request->file('cover')->store('cover/' . $user->id, 'public');
+            $path = $request->file('cover')->store('photos/' . $user->id, 'public');
             $user->update(['cover_path' => $path]);
         }
 
@@ -104,7 +104,7 @@ class ProfileController extends Controller
             }
 
             // Replace new image and save
-            $path = $request->file('avatar')->store('avatar/' . $user->id, 'public');
+            $path = $request->file('avatar')->store('photos/' . $user->id, 'public');
             $user->update(['avatar_path' => $path]);
         }
 
