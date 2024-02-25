@@ -8,7 +8,7 @@ import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 
 defineProps({
     posts: Object,
-    status: String,
+    status: Object,
     errors: Object,
 });
 </script>
@@ -28,7 +28,11 @@ defineProps({
                 </div>
                 <div class="lg:col-span-6 space-y-3 py-3 lg:py-6">
                     <CreatePost :status="status" :errors="errors" />
-                    <PostList :posts="posts.data" />
+                    <PostList
+                        :posts="posts.data"
+                        :status="status"
+                        :errors="errors"
+                    />
                 </div>
                 <div
                     class="lg:col-span-3 h-[calc(100vh-58px)] top-[58px] px-3 sticky hidden lg:block overflow-auto"

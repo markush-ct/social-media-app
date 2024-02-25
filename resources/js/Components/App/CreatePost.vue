@@ -7,7 +7,7 @@ import InputTextArea from "@/Components/InputTextArea.vue";
 import ToastNotification from "../ToastNotification.vue";
 
 defineProps({
-    status: String,
+    status: Object,
     errors: Object,
 });
 
@@ -41,10 +41,12 @@ const closeNotification = () => {
     <ToastNotification
         :show="showNotification"
         @close="closeNotification"
-        :type="status ? 'status' : 'error'"
+        :type="status && status.success ? 'status' : 'error'"
     >
         <template #content>
-            <template v-if="status">{{ status }}</template>
+            <template v-if="status">
+                {{ status.success || status.error }}
+            </template>
             <template v-else>
                 <p v-for="value in errors">
                     {{ value }}
