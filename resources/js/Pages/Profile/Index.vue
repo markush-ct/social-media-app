@@ -20,12 +20,19 @@ const coverImageSrc = ref(null);
 const avatarImageSrc = ref(null);
 const isChangingImage = ref(false);
 const showStatusToast = ref(false);
+const showErrorToast = ref(false);
 
-defineProps({
+const props = defineProps({
     user: Object,
     status: String,
     errors: Object,
 });
+
+const isAnImage = (file) => {
+    const mime = ["image/jpeg", "image/png"];
+
+    return mime.includes(file.type) ?? false;
+};
 
 // Forms
 const imageForm = useForm({
@@ -43,27 +50,45 @@ const openAvatarInput = () => {
 
 const onCoverChange = (e) => {
     imageForm.cover = e.target.files[0];
-    isChangingImage.value = true;
 
-    if (imageForm.cover) {
-        const reader = new FileReader();
-        reader.onload = () => {
-            coverImageSrc.value = reader.result;
-        };
-        reader.readAsDataURL(imageForm.cover);
+    if (isAnImage(imageForm.cover)) {
+        isChangingImage.value = true;
+
+        if (imageForm.cover) {
+            const reader = new FileReader();
+            reader.onload = () => {
+                coverImageSrc.value = reader.result;
+            };
+            reader.readAsDataURL(imageForm.cover);
+        }
+    } else {
+        showErrorToast.value = true;
+        setTimeout(() => {
+            showErrorToast.value = false;
+        }, 5000);
+        props.errors.cover = "Not a valid image!";
     }
 };
 
 const onAvatarChange = (e) => {
     imageForm.avatar = e.target.files[0];
-    isChangingImage.value = true;
 
-    if (imageForm.avatar) {
-        const reader = new FileReader();
-        reader.onload = () => {
-            avatarImageSrc.value = reader.result;
-        };
-        reader.readAsDataURL(imageForm.avatar);
+    if (isAnImage(imageForm.avatar)) {
+        isChangingImage.value = true;
+
+        if (imageForm.avatar) {
+            const reader = new FileReader();
+            reader.onload = () => {
+                avatarImageSrc.value = reader.result;
+            };
+            reader.readAsDataURL(imageForm.avatar);
+        }
+    } else {
+        showErrorToast.value = true;
+        setTimeout(() => {
+            showErrorToast.value = false;
+        }, 5000);
+        props.errors.avatar = "Not a valid image!";
     }
 };
 
@@ -80,6 +105,7 @@ const onImageCancel = () => {
 };
 
 const closeStatusToast = () => (showStatusToast.value = false);
+const closeErrorToast = () => (showErrorToast.value = false);
 
 const submitCoverImage = () => {
     imageForm.post(route("profile.updateImages"), {
@@ -89,6 +115,13 @@ const submitCoverImage = () => {
             showStatusToast.value = true;
             setTimeout(() => {
                 showStatusToast.value = false;
+            }, 5000);
+        },
+        onError: () => {
+            imageReset();
+            showErrorToast.value = true;
+            setTimeout(() => {
+                showErrorToast.value = false;
             }, 5000);
         },
     });
@@ -126,6 +159,17 @@ const submitCoverImage = () => {
                     <XMarkIcon class="w-[24px]" @click="closeStatusToast" />
                 </span>
             </div>
+
+            <div
+                v-show="showErrorToast"
+                class="fixed z-50 top-20 lg:right-3 -right-1/2 transform -translate-x-1/2 lg:transform-none p-3 w-full lg:max-w-[30%] bg-red-800 rounded-md flex gap-2 items-start justify-between bg-opacity-80 outline outline-1 outline-red-600"
+            >
+                <span>{{ errors.cover || errors.avatar }}</span>
+                <span class="shrink-0">
+                    <XMarkIcon class="w-[24px]" @click="closeErrorToast" />
+                </span>
+            </div>
+
             <div
                 v-if="coverImageSrc"
                 class="fixed bg-gray-900 bg-opacity-75 w-full z-50 py-3 px-8 flex justify-between items-center"
