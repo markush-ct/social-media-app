@@ -2,20 +2,64 @@
 import PrimaryButton from "@/Components/PrimaryButton.vue";
 import { ref } from "vue";
 import { TransitionRoot } from "@headlessui/vue";
+import { useForm } from "@inertiajs/vue3";
+import InputTextArea from "@/Components/InputTextArea.vue";
+import ToastNotification from "../ToastNotification.vue";
+
+defineProps({
+    status: String,
+    errors: Object,
+});
 
 const postCreating = ref(false);
+const showNotification = ref(false);
+
+const postForm = useForm({
+    body: null,
+});
+
+const handlePost = () => {
+    postForm.post(route("posts.store"), {
+        onSuccess: () => {
+            postForm.reset();
+            showNotification.value = true;
+            setTimeout(() => (showNotification.value = false), 5000);
+        },
+        onError: () => {
+            showNotification.value = true;
+            setTimeout(() => (showNotification.value = false), 5000);
+        },
+    });
+};
+
+const closeNotification = () => {
+    showNotification.value = false;
+};
 </script>
 
 <template>
+    <ToastNotification
+        :show="showNotification"
+        @close="closeNotification"
+        :type="status ? 'status' : 'error'"
+    >
+        <template #content>
+            <template v-if="status">{{ status }}</template>
+            <template v-else>
+                <p v-for="value in errors">
+                    {{ value }}
+                </p>
+            </template>
+        </template>
+    </ToastNotification>
+
     <div class="bg-white dark:bg-gray-800 p-3 shadow rounded-md space-y-3">
-        <textarea
-            @focus="postCreating = true"
-            @blur="postCreating = false"
-            name="post"
-            id="post"
+        <InputTextArea
+            v-model="postForm.body"
+            @click="postCreating = true"
             placeholder="Create new post here..."
-            class="w-full border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm"
-        ></textarea>
+        />
+
         <TransitionRoot
             :show="postCreating"
             enter="transition-opacity duration-150"
@@ -33,7 +77,7 @@ const postCreating = ref(false);
                     accept="image/png, image/jpeg"
                 />
 
-                <PrimaryButton>Submit</PrimaryButton>
+                <PrimaryButton @click="handlePost">Submit</PrimaryButton>
             </div>
         </TransitionRoot>
     </div>
