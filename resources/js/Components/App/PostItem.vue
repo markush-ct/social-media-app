@@ -17,7 +17,7 @@ const props = defineProps({ post: Object });
 
 const authUser = usePage().props.auth.user;
 const isOpen = ref(false);
-const emit = defineEmits(["sendPostItem"]);
+const emit = defineEmits(["sendPostItem", "sendPostItemForDelete"]);
 const isMyProfile = computed(
     () => (authUser && authUser.id) === props.post.user.id
 );
@@ -29,6 +29,10 @@ function isImage(attachment) {
 
 const sendPostItem = () => {
     emit("sendPostItem", props.post);
+};
+
+const sendPostItemForDelete = () => {
+    emit("sendPostItemForDelete", props.post);
 };
 </script>
 
@@ -94,7 +98,7 @@ const sendPostItem = () => {
                         </div>
                     </DropdownItem>
 
-                    <DropdownItem>
+                    <DropdownItem @click="sendPostItemForDelete">
                         <div
                             class="dark:text-red-500 text-red-700 flex gap-3 items-center"
                         >

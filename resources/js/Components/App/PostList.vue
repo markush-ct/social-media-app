@@ -1,6 +1,6 @@
 <script setup>
 import { ref } from "vue";
-import { useForm } from "@inertiajs/vue3";
+import { router, useForm } from "@inertiajs/vue3";
 import PostItem from "./PostItem.vue";
 import Modal from "@/Components/Modal.vue";
 import InputTextArea from "@/Components/InputTextArea.vue";
@@ -26,7 +26,6 @@ const getPostItem = (data) => {
         postItemEditing.value = true;
         postItem.value = data;
         updatePostItemForm.body = data.body;
-        console.log(data);
     }
 };
 
@@ -48,6 +47,22 @@ const handleUpdatePostItem = () => {
             setTimeout(() => (showNotification.value = false), 5000);
         },
     });
+};
+
+const handleDeletePostItem = (post) => {
+    if (window.confirm("Are you sure you want to delete this post?")) {
+        router.delete(route("posts.destroy", post), {
+            preserveScroll: true,
+            onSuccess: () => {
+                showNotification.value = true;
+                setTimeout(() => (showNotification.value = false), 5000);
+            },
+            onError: () => {
+                showNotification.value = true;
+                setTimeout(() => (showNotification.value = false), 5000);
+            },
+        });
+    }
 };
 
 const closeNotification = () => {
@@ -77,7 +92,8 @@ const closeNotification = () => {
         v-for="post of posts"
         :post="post"
         :key="post.id"
-        @send-post-item="getPostItem"
+        @sendPostItem="getPostItem"
+        @sendPostItemForDelete="handleDeletePostItem"
     />
 
     <Modal :show="postItemEditing" @close="closeModal">

@@ -58,8 +58,17 @@ class PostController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy(Post $post)
     {
-        //
+        // Check if the authenticated user is the owner of the post
+        if (auth()->user()->id !== $post->user_id) {
+            // Return response with unauthorized status code
+            return back()->with('status', ['error' => 'Unauthorized!']);
+        }
+
+        // Delete post here
+        $post->delete();
+
+        return back()->with('status', ['success' => 'Your post has been deleted successfully!']);
     }
 }
