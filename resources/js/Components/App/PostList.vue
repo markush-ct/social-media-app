@@ -125,7 +125,7 @@ const closeNotification = () => {
             <div>
                 <InputTextArea
                     v-model="updatePostItemForm.body"
-                    placeholder="Create new post here..."
+                    placeholder="Update post here..."
                     class="min-h-[100px]"
                 />
             </div>

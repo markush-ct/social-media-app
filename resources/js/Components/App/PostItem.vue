@@ -45,7 +45,7 @@ const sendPostItem = () => {
                             'https://xsgames.co/randomusers/assets/avatars/male/72.jpg'
                         "
                         alt="Avatar Profile"
-                        class="w-[40px] rounded-full hover:ring-2 hover:ring-indigo-500 hover:ring-offset-2 transition ease-in-out duration-150 dark:hover:ring-offset-gray-800"
+                        class="w-[40px] rounded-full h-[40px] object-center object-cover hover:ring-2 hover:ring-indigo-500 hover:ring-offset-2 transition ease-in-out duration-150 dark:hover:ring-offset-gray-800"
                     />
                 </a>
                 <div>
