@@ -17,28 +17,24 @@ defineProps({
     <Head title="PinoyBook" />
 
     <AuthenticatedLayout>
-        <div
-            class="h-full bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-gray-100"
-        >
-            <div class="lg:grid lg:grid-cols-12 lg:gap-12">
-                <div
-                    class="lg:col-span-3 h-[calc(100vh-58px)] top-[58px] px-3 sticky hidden lg:block overflow-auto"
-                >
-                    <GroupList />
-                </div>
-                <div class="lg:col-span-6 space-y-3 py-3 lg:py-6">
-                    <CreatePost :status="status" :errors="errors" />
-                    <PostList
-                        :posts="posts.data"
-                        :status="status"
-                        :errors="errors"
-                    />
-                </div>
-                <div
-                    class="lg:col-span-3 h-[calc(100vh-58px)] top-[58px] px-3 sticky hidden lg:block overflow-auto"
-                >
-                    <FollowingList />
-                </div>
+        <div class="lg:grid lg:grid-cols-12 lg:gap-12">
+            <div
+                class="lg:col-span-3 sticky h-[calc(100vh-58px)] top-[58px] hidden lg:block"
+            >
+                <GroupList />
+            </div>
+            <div class="lg:col-span-6 space-y-3 py-3 lg:py-6">
+                <CreatePost :status="status" :errors="errors" />
+                <PostList
+                    :posts="posts.data"
+                    :status="status"
+                    :errors="errors"
+                />
+            </div>
+            <div
+                class="lg:col-span-3 sticky h-[calc(100vh-58px)] top-[58px] hidden lg:block"
+            >
+                <FollowingList />
             </div>
         </div>
     </AuthenticatedLayout>
@@ -53,9 +49,9 @@ defineProps({
     @apply bg-gray-100 dark:bg-gray-900;
 }
 ::-webkit-scrollbar-thumb {
-    @apply bg-gray-300 dark:bg-gray-800 rounded-full;
+    @apply bg-gray-300 dark:bg-gray-700 rounded-full;
 }
 ::-webkit-scrollbar-thumb:hover {
-    @apply bg-gray-500 dark:bg-gray-700;
+    @apply bg-gray-400 dark:bg-gray-500;
 }
 </style>

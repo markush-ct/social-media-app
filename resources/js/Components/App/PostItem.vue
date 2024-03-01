@@ -93,7 +93,7 @@ const sendPostItemForDelete = () => {
                 <template #content>
                     <DropdownItem @click="sendPostItem">
                         <div class="flex gap-3 items-center">
-                            <PencilIcon class="w-[18px]" />
+                            <PencilIcon class="icon-18" />
                             Edit
                         </div>
                     </DropdownItem>
@@ -102,7 +102,7 @@ const sendPostItemForDelete = () => {
                         <div
                             class="dark:text-red-500 text-red-700 flex gap-3 items-center"
                         >
-                            <TrashIcon class="w-[18px]" />
+                            <TrashIcon class="icon-18" />
                             Delete
                         </div>
                     </DropdownItem>

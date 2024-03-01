@@ -71,10 +71,20 @@ const closeNotification = () => {
 </script>
 
 <template>
+    <div class="space-y-3">
+        <PostItem
+            v-for="post of posts"
+            :post="post"
+            :key="post.id"
+            @sendPostItem="getPostItem"
+            @sendPostItemForDelete="handleDeletePostItem"
+        />
+    </div>
+
     <ToastNotification
         :show="showNotification"
         @close="closeNotification"
-        :type="status && status.success ? 'status' : 'error'"
+        :type="status && status.success ? 'success' : 'error'"
     >
         <template #content>
             <template v-if="status">{{
@@ -87,14 +97,6 @@ const closeNotification = () => {
             </template>
         </template>
     </ToastNotification>
-
-    <PostItem
-        v-for="post of posts"
-        :post="post"
-        :key="post.id"
-        @sendPostItem="getPostItem"
-        @sendPostItemForDelete="handleDeletePostItem"
-    />
 
     <Modal :show="postItemEditing" @close="closeModal">
         <div class="p-4 text-gray-900 dark:text-gray-100 space-y-3">

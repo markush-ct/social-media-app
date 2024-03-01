@@ -13,9 +13,7 @@ const authUser = usePage().props.auth.user;
 
 <template>
     <div>
-        <div
-            class="min-h-screen bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-gray-100 relative"
-        >
+        <div class="min-h-screen relative">
             <nav
                 class="bg-white dark:bg-gray-800 border-b border-gray-100 dark:border-gray-700 h-[58px] fixed w-full z-50 top-0"
             >

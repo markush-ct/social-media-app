@@ -38,23 +38,6 @@ const closeNotification = () => {
 </script>
 
 <template>
-    <ToastNotification
-        :show="showNotification"
-        @close="closeNotification"
-        :type="status && status.success ? 'status' : 'error'"
-    >
-        <template #content>
-            <template v-if="status">
-                {{ status.success || status.error }}
-            </template>
-            <template v-else>
-                <p v-for="value in errors">
-                    {{ value }}
-                </p>
-            </template>
-        </template>
-    </ToastNotification>
-
     <div class="bg-white dark:bg-gray-800 p-3 shadow rounded-md space-y-3">
         <InputTextArea
             v-model="postForm.body"
@@ -83,6 +66,21 @@ const closeNotification = () => {
             </div>
         </TransitionRoot>
     </div>
-</template>
 
-<style scoped></style>
+    <ToastNotification
+        :show="showNotification"
+        @close="closeNotification"
+        :type="status && status.success ? 'success' : 'error'"
+    >
+        <template #content>
+            <template v-if="status">
+                {{ status.success || status.error }}
+            </template>
+            <template v-else>
+                <p v-for="value in errors">
+                    {{ value }}
+                </p>
+            </template>
+        </template>
+    </ToastNotification>
+</template>
