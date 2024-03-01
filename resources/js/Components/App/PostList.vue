@@ -6,6 +6,7 @@ import Modal from "@/Components/Modal.vue";
 import InputTextArea from "@/Components/InputTextArea.vue";
 import PrimaryButton from "../PrimaryButton.vue";
 import ToastNotification from "../ToastNotification.vue";
+import { XMarkIcon } from "@heroicons/vue/24/solid";
 
 const props = defineProps({
     posts: Object,
@@ -100,11 +101,17 @@ const closeNotification = () => {
 
     <Modal :show="postItemEditing" @close="closeModal">
         <div class="p-4 text-gray-900 dark:text-gray-100 space-y-3">
-            <h2
-                class="pb-3 text-center text-xl font-bold border-b border-gray-200 dark:border-gray-600"
+            <div
+                class="flex justify-between items-center border-b border-gray-200 dark:border-gray-600 pb-3"
             >
-                Edit Post
-            </h2>
+                <h2 class="text-xl font-bold">Edit Post</h2>
+                <div
+                    @click="postItemEditing = false"
+                    class="bg-gray-200 dark:bg-gray-700 hover:bg-opacity-60 dark:hover:bg-opacity-80 p-2 rounded-full transition ease-in-out duration-150"
+                >
+                    <XMarkIcon class="icon-18" />
+                </div>
+            </div>
 
             <div class="flex items-center gap-3">
                 <a :href="route('profile.index', postItem.user.username)">

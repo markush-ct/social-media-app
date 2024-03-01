@@ -84,7 +84,7 @@ const sendPostItemForDelete = () => {
             >
                 <template #trigger>
                     <div
-                        class="hover:bg-indigo-500 hover:text-white p-3 rounded-full transition ease-in-out duration-150"
+                        class="bg-gray-200 dark:bg-gray-700 hover:bg-opacity-60 dark:hover:bg-opacity-80 p-2 rounded-full transition ease-in-out duration-150"
                     >
                         <EllipsisHorizontalIcon class="w-[18px]" />
                     </div>
